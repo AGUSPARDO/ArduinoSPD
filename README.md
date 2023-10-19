@@ -111,7 +111,67 @@ En la tercera parte de este proyecto, se agregó un sensor de luz ambiental para
 
 ### Función Principal
 La función más importante en la Parte 3, que incorpora el sensor de luz ambiental, sigue siendo loop, ya que coordina las operaciones generales del proyecto y agrega la funcionalidad del sensor de luz ambiental y otros elementos sin cambiar la función principal de la Parte 2.
+```
+void loop() {
+    int estadoInterruptor = digitalRead(INTERRUPTOR);
+    //SENSOR TEMP.
+  	int lecturaSensor = analogRead(SENSOR);
+  	//Funcion MAP transforma lectura de analog read en lo que deseo en este caso temp con param.
+	int temperatura;
+  	temperatura = map(lecturaSensor,20,358,-40,125);
+  	Serial.print("Temperatura: ");
+  	Serial.println(temperatura);
+  	
+  	int lecturaLuz = analogRead(FOTORESISTOR);
+    Serial.print("Luz: ");
+    Serial.println(lecturaLuz);
+  	
+  	if (lecturaLuz > umbralLuz) {
+        digitalWrite(LED, HIGH); // Enciende el LED si la lectura del fototransistor supera el umbral
+    } else {
+        digitalWrite(LED, LOW); // Apaga el LED si no supera el umbral
+    }
 
+    if (estadoInterruptor != interruptorEstadoAnterior) {
+        // Si el interruptor cambia de estado, reinicia el contador a cero
+        contador = 0;
+        cambiarDisplay(mostrarContadorFlag);
+        interruptorEstadoAnterior = estadoInterruptor;
+    }
+
+    if (estadoInterruptor == LOW) {
+        mostrarContadorFlag = true;
+      	digitalWrite(MOTOR, LOW);
+    } else {
+        mostrarContadorFlag = false;
+    }
+
+    if (mostrarContadorFlag) {
+        mostrarContadorEnDisplays(contador);
+        if (millis() - cambioTiempo >= tiempoEntreCambio) {
+            contador++;
+            if (contador > 99) {
+                contador = 0;
+            }
+            cambioTiempo = millis();
+        }
+    } else {
+        int primo = siguientePrimo(contador);
+        mostrarContadorEnDisplays(primo);
+        // Enciende el motor cuando se muestra un número primo y la temperatura es mayor a 25
+        if (temperatura > 25 && esPrimo(primo)) {
+            digitalWrite(MOTOR, HIGH);
+        } else {
+            digitalWrite(MOTOR, LOW);
+        }
+
+        if (millis() - cambioTiempo >= tiempoMostrarPrimo) {
+            cambioTiempo = millis();
+            contador = primo;
+        }
+    }
+}
+```
 
 
 
