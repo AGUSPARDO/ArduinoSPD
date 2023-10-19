@@ -51,7 +51,54 @@ En la segunda parte del proyecto, hemos mejorado el contador de 0 a 99 utilizand
 
 La función principal en esta segunda parte del proyecto es loop(). En esta función, se lee el estado del interruptor deslizante para alternar entre dos modos de visualización: contador y números primos. Además, se monitorea la temperatura ambiente a través de un sensor. En el modo contador, se muestra el valor actual en los displays de 7 segmentos, y en el modo números primos, se muestra el siguiente número primo en el rango de 0 a 99. Cuando se muestran números primos y la temperatura supera los 25 grados Celsius, se activa un motor de aficionado. La función loop() también actualiza continuamente el contador y controla el tiempo para cambiar de número primo. En resumen, esta función orquesta la lógica principal del proyecto y permite una visualización versátil y reactiva a las condiciones ambientales.
 ```
+void loop() {
+    int estadoInterruptor = digitalRead(INTERRUPTOR);
+    //SENSOR TEMP.
+  	int lecturaSensor = analogRead(SENSOR);
+  	//Funcion MAP transforma lectura de analog read en lo que deseo en este caso temp con param.
+	int temperatura;
+  	temperatura = map(lecturaSensor,20,358,-40,125);
+  	Serial.println(temperatura);
 
+    if (estadoInterruptor != interruptorEstadoAnterior) {
+        // Si el interruptor cambia de estado, reinicia el contador a cero
+        contador = 0;
+        cambiarDisplay(mostrarContadorFlag);
+        interruptorEstadoAnterior = estadoInterruptor;
+    }
+
+    if (estadoInterruptor == LOW) {
+        mostrarContadorFlag = true;
+      	digitalWrite(MOTOR, LOW);
+    } else {
+        mostrarContadorFlag = false;
+    }
+
+    if (mostrarContadorFlag) {
+        mostrarContadorEnDisplays(contador);
+        if (millis() - cambioTiempo >= tiempoEntreCambio) {
+            contador++;
+            if (contador > 99) {
+                contador = 0;
+            }
+            cambioTiempo = millis();
+        }
+    } else {
+        int primo = siguientePrimo(contador);
+        mostrarContadorEnDisplays(primo);
+        // Enciende el motor cuando se muestra un número primo y la temperatura es mayor a 25
+        if (temperatura > 25 && esPrimo(primo)) {
+            digitalWrite(MOTOR, HIGH);
+        } else {
+            digitalWrite(MOTOR, LOW);
+        }
+
+        if (millis() - cambioTiempo >= tiempoMostrarPrimo) {
+            cambioTiempo = millis();
+            contador = primo;
+        }
+    }
+}
 ```
 
 
