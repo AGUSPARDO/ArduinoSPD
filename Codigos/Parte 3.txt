@@ -1,0 +1,276 @@
+#define A 13
+#define B 12
+#define C 11
+#define D 10
+#define E 9
+#define F 8
+#define G 7
+#define DISPLAY_UNO A5
+#define DISPLAY_DOS A4
+#define INTERRUPTOR 5
+#define MOTOR 4
+#define DELAY_DISPLAY 50
+#define SENSOR A3
+#define FOTORESISTOR A2
+#define LED 6
+
+int umbralLuz = 500; // Ajusta este umbral de luz según tu entorno
+int contador = 0;
+bool mostrarContadorFlag = true; // Inicialmente muestra el contador
+bool interruptorEstadoAnterior = LOW; // Almacena el estado anterior del interruptor
+unsigned long cambioTiempo = 0;
+unsigned long tiempoEntreCambio = 1000; // Un segundo
+unsigned long tiempoMostrarPrimo = 1000; // Tiempo para mostrar números primos
+
+void setup() {
+    // Configuración de pines como salida
+    pinMode(A, OUTPUT);
+    pinMode(B, OUTPUT);
+    pinMode(C, OUTPUT);
+    pinMode(D, OUTPUT);
+    pinMode(E, OUTPUT);
+    pinMode(F, OUTPUT);
+    pinMode(G, OUTPUT);
+    pinMode(MOTOR, OUTPUT);
+    pinMode(LED, OUTPUT);
+    pinMode(DISPLAY_UNO, OUTPUT);
+    pinMode(DISPLAY_DOS, OUTPUT);
+    pinMode(INTERRUPTOR, INPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int estadoInterruptor = digitalRead(INTERRUPTOR);
+    //SENSOR TEMP.
+  	int lecturaSensor = analogRead(SENSOR);
+  	//Funcion MAP transforma lectura de analog read en lo que deseo en este caso temp con param.
+	int temperatura;
+  	temperatura = map(lecturaSensor,20,358,-40,125);
+  	Serial.print("Temperatura: ");
+  	Serial.println(temperatura);
+  
+  	int lecturaLuz = analogRead(FOTORESISTOR);
+    Serial.print("Luz: ");
+    Serial.println(lecturaLuz);
+  	
+  	if (lecturaLuz > umbralLuz) {
+        digitalWrite(LED, HIGH); // Enciende el LED si la lectura del fototransistor supera el umbral
+    } else {
+        digitalWrite(LED, LOW); // Apaga el LED si no supera el umbral
+    }
+
+    if (estadoInterruptor != interruptorEstadoAnterior) {
+        // Si el interruptor cambia de estado, reinicia el contador a cero
+        contador = 0;
+        cambiarDisplay(mostrarContadorFlag);
+        interruptorEstadoAnterior = estadoInterruptor;
+    }
+
+    if (estadoInterruptor == LOW) {
+        mostrarContadorFlag = true;
+      	digitalWrite(MOTOR, LOW);
+    } else {
+        mostrarContadorFlag = false;
+    }
+
+    if (mostrarContadorFlag) {
+        mostrarContadorEnDisplays(contador);
+        if (millis() - cambioTiempo >= tiempoEntreCambio) {
+            contador++;
+            if (contador > 99) {
+                contador = 0;
+            }
+            cambioTiempo = millis();
+        }
+    } else {
+        int primo = siguientePrimo(contador);
+        mostrarContadorEnDisplays(primo);
+        // Enciende el motor cuando se muestra un número primo y la temperatura es mayor a 25
+        if (temperatura > 25 && esPrimo(primo)) {
+            digitalWrite(MOTOR, HIGH);
+        } else {
+            digitalWrite(MOTOR, LOW);
+        }
+
+        if (millis() - cambioTiempo >= tiempoMostrarPrimo) {
+            cambioTiempo = millis();
+            contador = primo;
+        }
+    }
+}
+
+void cambiarDisplay(bool mostrarContador) {
+    if (mostrarContador) {
+        apagarDisplay(DISPLAY_DOS);
+        prenderDisplay(DISPLAY_UNO);
+    } else {
+        apagarDisplay(DISPLAY_UNO);
+        prenderDisplay(DISPLAY_DOS);
+    }
+}
+
+int siguientePrimo(int n) {
+    for (int i = n + 1; i <= 99; i++) {
+        if (esPrimo(i)) {
+            return i;
+        }
+    }
+    // Si no se encuentra un primo en el rango, se inicia desde cero.
+    for (int i = 0; i <= n; i++) {
+        if (esPrimo(i)) {
+            return i;
+        }
+    }
+    // Si el rango no contiene primos, regresa 0.
+    return 0;
+}
+
+void prenderDisplay(int display) {
+    if (display == DISPLAY_DOS) {
+        // Apaga el display UNO
+        digitalWrite(DISPLAY_UNO, LOW);
+        // Enciende el display DOS 
+        digitalWrite(DISPLAY_DOS, HIGH);
+        // Espera un breve período para que el cambio en la visualización sea efectivo
+        delay(DELAY_DISPLAY);
+    } else if (display == DISPLAY_UNO) {
+        // Enciende el display UNO
+        digitalWrite(DISPLAY_UNO, HIGH);
+        // Apaga el display DOS
+        digitalWrite(DISPLAY_DOS, LOW);
+        // Espera un breve período para que el cambio en la visualización sea efectivo
+        delay(DELAY_DISPLAY);
+    } else {
+        // Enciende ambos displays
+        digitalWrite(DISPLAY_UNO, HIGH);
+        digitalWrite(DISPLAY_DOS, HIGH);
+    }
+}
+
+void mostrarDigito(int digito) {
+    switch(digito) {
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 0 en el display de 7 segmentos
+        case 0:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 1 en el display de 7 segmentos
+        case 1:
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 2 en el display de 7 segmentos
+        case 2:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 3 en el display de 7 segmentos
+        case 3:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 4 en el display de 7 segmentos
+        case 4:
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 5 en el display de 7 segmentos
+        case 5:
+            digitalWrite(A, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 6 en el display de 7 segmentos
+        case 6:
+            digitalWrite(A, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 7 en el display de 7 segmentos
+        case 7:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 8 en el display de 7 segmentos
+        case 8:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 9 en el display de 7 segmentos
+        case 9:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            break;
+    }
+}
+
+void apagarDisplay(int display) {
+    digitalWrite(A, LOW);
+    digitalWrite(B, LOW);
+    digitalWrite(C, LOW);
+    digitalWrite(D, LOW);
+    digitalWrite(E, LOW);
+    digitalWrite(F, LOW);
+    digitalWrite(G, LOW);
+}
+
+void mostrarContadorEnDisplays(int contador) {
+    // Apaga el primer display
+    apagarDisplay(DISPLAY_UNO); 
+    // Muestra el dígito de las decenas en el primer display     
+    mostrarDigito(contador / 10);    
+    // Enciende el primer display para mostrar el dígito de las decenas
+    prenderDisplay(DISPLAY_UNO);
+    // Apaga el segundo display
+    apagarDisplay(DISPLAY_DOS);    
+    // Muestra el dígito de las unidades en el segundo display  
+    mostrarDigito(contador % 10);    
+    // Enciende el segundo display para mostrar el dígito de las unidades
+    prenderDisplay(DISPLAY_DOS);      
+}
+
+bool esPrimo(int n) {
+    if (n <= 1) {
+        return false;
+    }
+    if (n <= 3) {
+        return true;
+    }
+    if (n % 2 == 0 || n % 3 == 0) {
+        return false;
+    }
+    int i = 5;
+    while (i * i <= n) {
+        if (n % i == 0 || n % (i + 2) == 0) {
+            return false;
+        }
+        i += 6;
+    }
+    return true;
+}

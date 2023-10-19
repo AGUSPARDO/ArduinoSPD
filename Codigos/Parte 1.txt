@@ -1,0 +1,296 @@
+// Definicion de pines.
+#define A 13
+#define B 12
+#define C 11
+#define D 10
+#define E 9
+#define F 8
+#define G 7
+#define DISPLAY_UNO A5
+#define DISPLAY_DOS A4
+#define BOTON_UP 5
+#define BOTON_DOWN 4
+#define BOTON_RESET 3
+#define DELAY_DISPLAY 50
+
+// Declaracion de funciones.
+/* FUNCION: prenderDisplay. 
+    int display: Parametro que recibe un pin (DISPLAY_UNO, DISPLAY_DOS).
+    -- void: No retorna nada.
+    
+    Controla la visualizacion en los dos displays de 7 segmentos, muestra los dos digitos 
+    y alterna en caso de ser necesario.
+*/
+void prenderDisplay(int display);
+
+/* FUNCION: mostrarDigito. 
+    int digito: Parametro que recibe un digito (0-9) 
+    -- void: No retorna nada.
+        
+    Muestra un digito en un display de 7 segmentos.
+*/
+void mostrarDigito(int digito);
+
+/* FUNCION: apagarDisplay.
+    int display: Parametro que recibe un pin (DISPLAY_UNO, DISPLAY_DOS).
+    -- void: No retorna nada.
+
+    Apaga todos los segmentos de un display de 7 segmento.
+*/
+void apagarDisplay(int display);
+
+/* FUNCION: mostrarContador. 
+    int contador: Parametro que recibe un numero (00-99) 
+    -- void: No retorna nada.
+        
+    Muestra un numero de dos digitos en dos displays de 7 segmentos.
+*/
+void mostrarContador(int contador);
+
+/* FUNCION: botonPresionado. 
+    -- int: Retorna estado de pulsadores (0 o 1)
+        
+FUNCION: botonPresionado
+   -- int: Retorna 1 si el pulsador esta presionado (UP, DOWN, RESET) o 
+        0 si ningun pulsador se presiono.
+
+    Detecta si alguno de los pulsadores (UP, DOWN, RESET) ha sido presionado y 
+    devuelve el valor correspondiente al pulsador presionado. Tambien realiza 
+    seguimiento del estado anterior de los pulsadores para evitar que el mismo pulsador se use mas de una vez.
+*/
+int botonPresionado();
+
+// Declaracion e inicializacion de variables.
+int contadorDigito = 0; 
+int sube = 1; // sube = HIGH
+int subeAnterior = 1; // subeAnterior = HIGH
+int baja = 1; // baja = HIGH
+int bajaAnterior = 1; // bajaAnterior = HIGH
+int reset = 1; // reset = HIGH
+int resetAnterior = 1; // resetAnterior = HIGH
+
+void setup() {
+    // Configuracion de pines como entrada o salida
+    pinMode(A, OUTPUT);
+    pinMode(B, OUTPUT);
+    pinMode(C, OUTPUT);
+    pinMode(D, OUTPUT);
+    pinMode(E, OUTPUT);
+    pinMode(F, OUTPUT);
+    pinMode(G, OUTPUT);
+    pinMode(DISPLAY_UNO, OUTPUT);
+    pinMode(DISPLAY_DOS, OUTPUT);
+    pinMode(BOTON_UP, INPUT_PULLUP);
+    pinMode(BOTON_DOWN, INPUT_PULLUP);
+    pinMode(BOTON_RESET, INPUT_PULLUP);
+    Serial.begin(9600);
+}
+
+void loop() {
+    // Llama a la funcion para detectar si se presiono un pulsador y almacena el resultado en 'presionar'.
+	int presionar = botonPresionado();
+    // Comprueba si el pulsador 'UP' fue presionado.
+    if(presionar == BOTON_UP) {
+        // Incrementa el contador de digitos en una unidad.
+        contadorDigito++;
+        // Si el contador supera 99, se reinicia a 0.
+        if(contadorDigito >= 99) {
+      	    contadorDigito = 0;
+      }
+    // Comprueba si el pulsador 'DOWN' fue presionado.
+    } else if(presionar == BOTON_DOWN) {
+        // Decrementa el contador de digitos en una unidad.
+        contadorDigito--;
+        // Si el contador es menor que 0, se establece en 99 para mantener un rango valido.
+        if(contadorDigito < 0) {
+      	    contadorDigito = 99;
+        }
+    // Comprueba si el pulsador 'RESET' fue presionado.
+    } else if(presionar == BOTON_RESET) {
+        // Restablece el contador de digitos a 0.
+        contadorDigito = 0;
+    }
+    // Llama a la funcion 'mostrarContador' para actualizar la visualizacion en los displays.
+    mostrarContador(contadorDigito);
+}
+
+void prenderDisplay(int display) {
+    if(display == DISPLAY_DOS) {
+        // Apaga el display UNO
+        digitalWrite(DISPLAY_UNO, LOW);
+        // Enciende el display DOS 
+	    digitalWrite(DISPLAY_DOS, HIGH);
+        // Espera un breve período para que el cambio en la visualización sea efectivo
+        delay(DELAY_DISPLAY);
+   } else if(display == DISPLAY_UNO) {
+        // Enciende el display UNO
+        digitalWrite(DISPLAY_UNO, HIGH);
+        // Apaga el display DOS
+        digitalWrite(DISPLAY_DOS, LOW);
+        // Espera un breve período para que el cambio en la visualización sea efectivo
+        delay(DELAY_DISPLAY);
+   } else {
+        // Enciende ambos displays
+        digitalWrite(DISPLAY_UNO, HIGH);
+        digitalWrite(DISPLAY_DOS, HIGH);
+   }
+}
+
+void mostrarDigito(int digito) {
+    switch(digito) {
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 0 en el display de 7 segmentos
+        case 0:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            //Serial.println("Entra case 0");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 1 en el display de 7 segmentos
+        case 1:
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            //Serial.println("Entra case 1");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 2 en el display de 7 segmentos
+        case 2:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 2");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 3 en el display de 7 segmentos
+        case 3:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 3");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 4 en el display de 7 segmentos
+        case 4:
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 4");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 5 en el display de 7 segmentos
+        case 5:
+            digitalWrite(A, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 5");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 6 en el display de 7 segmentos
+        case 6:
+            digitalWrite(A, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 6");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 7 en el display de 7 segmentos
+        case 7:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            //Serial.println("Entra case 7");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 8 en el display de 7 segmentos
+        case 8:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(D, HIGH);
+            digitalWrite(E, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 8");
+            break;
+        // Configura los pines y activa los segmentos necesarios para mostrar el digito 9 en el display de 7 segmentos
+        case 9:
+            digitalWrite(A, HIGH);
+            digitalWrite(B, HIGH);
+            digitalWrite(C, HIGH);
+            digitalWrite(F, HIGH);
+            digitalWrite(G, HIGH);
+            //Serial.println("Entra case 9");
+            break;
+    }
+}
+
+void apagarDisplay(int display) {
+    digitalWrite(A, LOW);
+    digitalWrite(B, LOW);
+    digitalWrite(C, LOW);
+    digitalWrite(D, LOW);
+    digitalWrite(E, LOW);
+    digitalWrite(F, LOW);
+    digitalWrite(G, LOW);
+}
+
+void mostrarContador(int contador) {
+    // Apaga el primer display
+    apagarDisplay(DISPLAY_UNO); 
+    // Muestra el digito de las decenas en el primer display     
+    mostrarDigito(contador / 10);    
+    // Enciende el primer display para mostrar el digito de las decenas
+    prenderDisplay(DISPLAY_UNO);
+    // Apaga el segundo display
+    apagarDisplay(DISPLAY_DOS);    
+    // Muestra el digito de las unidades en el segundo display  
+    mostrarDigito(contador % 10);    
+    // Enciende el segundo display para mostrar el digito de las unidades
+    prenderDisplay(DISPLAY_DOS);      
+}
+
+int botonPresionado() {
+    // Lee el estado actual de los pulsadores.
+    sube = digitalRead(BOTON_UP);
+    baja = digitalRead(BOTON_DOWN);
+    reset = digitalRead(BOTON_RESET);
+
+    // Establece el estado anterior de los pulsadores en 1 (HIGH) si los pulsadores
+    // esten en ese estado actualmente.
+    if(sube == 1) {
+        subeAnterior = 1;
+    }
+    if(baja == 1) {
+        bajaAnterior = 1;
+    }
+    if(reset == 1) {
+        resetAnterior = 1;
+    }
+  
+    // Detecta si el pulsador UP se presiono y su estado anterior era HIGH.
+    if (sube == 0 && sube != subeAnterior) {
+        // Actualiza el estado anterior del pulsador UP.
+        subeAnterior = sube;
+        // Devuelve el valor que representa el pulsador UP.
+        return BOTON_UP;
+    // Detecta si el pulsador DOWN se presiono y su estado anterior era HIGH.
+    } else if(baja == 0 && baja != bajaAnterior) {
+        // Actualiza el estado anterior del pulsador DOWN.
+        bajaAnterior = baja;
+        // Devuelve el valor que representa el pulsador DOWN.
+        return BOTON_DOWN;
+    // Detecta si el pulsador RESET se presiono y su estado anterior era HIGH.
+    } else if(reset == 0 && reset != resetAnterior) {
+        // Actualiza el estado anterior del pulsador RESET.
+        resetAnterior = reset;
+        // Devuelve el valor que representa el pulsador RESET.
+        return BOTON_RESET;
+    }
+    // Si ningun pulsador se presiono, devuelve 0.
+    return 0;
+}
