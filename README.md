@@ -22,7 +22,8 @@ En la función principal de nuestro código, utilizamos los pines B0, B1, B2 y B
 
 ### Parte 2: Modificación con Interruptor Deslizante y Números Primos
 
-![Proyecto_Uno](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/b3328a50-715d-4280-a1e1-a76853524541)
+
+![t725](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/b44839dd-4ed4-407d-a5ba-10027037ac84)
 
 
 ### Descripción
@@ -32,8 +33,8 @@ Este proyecto consiste en la creación de un contador de 0 a 99 utilizando un Di
 En la función principal de nuestro código, utilizamos los pines B0, B1, B2 y B3, definidos previamente, para controlar los LEDs y realizar la multiplexación en el Display de 7 Segmentos. Esto nos permite mostrar los números del contador en los dos dígitos del display.
 
 ### Parte 3: Modificación según el Último Número de Documento
-![Proyecto_Uno](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/b3328a50-715d-4280-a1e1-a76853524541)
 
+![t725 (1)](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/73e045cb-2345-499a-b2c1-b41d756b061e)
 
 ### Descripción
 Este proyecto consiste en la creación de un contador de 0 a 99 utilizando un Display de 7 Segmentos y la técnica de multiplexación. El objetivo es ofrecer una solución que permita mostrar un contador de dos dígitos de manera eficiente y elegante.
