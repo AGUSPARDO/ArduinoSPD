@@ -172,7 +172,75 @@ void loop() {
     }
 }
 ```
+### Parte 4: Visualización de Múltiplos de Cinco en Displays de 7 Segmentos y Monitor en Serie
 
+![Parte 4](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/07cdf1a1-4a6f-4c59-951b-57a7339839ba)
+
+
+### Descripción:
+En esta parte del proyecto, se ha ampliado la funcionalidad para visualizar los múltiplos de cinco en dos displays de 7 segmentos. En lugar de mostrar números primos, se muestran los múltiplos de cinco. Además, se envía la información de los múltiplos de cinco al monitor en serie para su visualización.
+
+### Función Principal
+La función principal de esta parte del proyecto es "loop". Su objetivo principal es coordinar las operaciones generales del proyecto, incluyendo la visualización de los múltiplos de cinco en los displays de 7 segmentos y el envío de esta información al monitor en serie.
+```
+void loop() {
+    int estadoInterruptor = digitalRead(INTERRUPTOR);
+
+    int lecturaSensor = analogRead(SENSOR);
+    int temperatura = map(lecturaSensor, 20, 358, -40, 125);
+
+    int lecturaLuz = analogRead(FOTORESISTOR);
+
+    if (lecturaLuz > umbralLuz) {
+        digitalWrite(LED, HIGH);
+    } else {
+        digitalWrite(LED, LOW);
+    }
+
+    if (estadoInterruptor != interruptorEstadoAnterior) {
+        contador = 0;
+        cambiarDisplay(mostrarContadorFlag);
+        interruptorEstadoAnterior = estadoInterruptor;
+        ultimoMultiploCalculado = -1;  // Reinicia el último múltiplo calculado
+    }
+
+    if (estadoInterruptor == LOW) {
+        mostrarContadorFlag = true;
+        digitalWrite(MOTOR, LOW);
+    } else {
+        mostrarContadorFlag = false;
+    }
+
+    if (mostrarContadorFlag) {
+        mostrarContadorEnDisplays(contador);
+        if (millis() - cambioTiempo >= tiempoEntreCambio) {
+            contador++;
+            if (contador > 99) {
+                contador = 0;
+            }
+            cambioTiempo = millis();
+        }
+    } else {
+        int multiploDeCinco = siguienteMultiploDeCinco(contador);
+        if (multiploDeCinco != ultimoMultiploCalculado) {
+            mostrarContadorEnDisplays(multiploDeCinco);
+
+            if (temperatura > 25 && esMultiploDeCinco(multiploDeCinco)) {
+                digitalWrite(MOTOR, HIGH);
+            } else {
+                digitalWrite(MOTOR, LOW);
+            }
+
+            ultimoMultiploCalculado = multiploDeCinco;  // Actualiza el último múltiplo calculado
+            Serial.print("Multiplo de cinco: ");
+            Serial.println(multiploDeCinco);
+        }
+    }
+}
+
+```
+
+La función "loop" realiza una serie de comprobaciones y operaciones dependiendo de la posición del interruptor y la intensidad de luz ambiental. Cuando se activa el proyecto, muestra los múltiplos de cinco en los displays de 7 segmentos y envía información detallada al monitor en serie. Esto permite una visualización interactiva y educativa de los múltiplos de cinco en tu proyecto.
 
 
 ### 🤖 Enlaces al Proyecto
@@ -183,3 +251,5 @@ Puedes encontrar más detalles y el código fuente de nuestros proyectos:
 🌟Parte 2 en [este enlace](https://www.tinkercad.com/things/dcBgZpA0Ob5)
 
 🌟Parte 3 en [este enlace](https://www.tinkercad.com/things/jIqqVZ08YlE)
+
+🌟Parte 4 en [este enlace](https://www.tinkercad.com/things/a4JSHWrsgi3)
