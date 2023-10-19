@@ -107,10 +107,10 @@ void loop() {
 ![t725 (1)](https://github.com/AGUSPARDO/ArduinoSPD/assets/123899891/73e045cb-2345-499a-b2c1-b41d756b061e)
 
 ### Descripción
-Este proyecto consiste en la creación de un contador de 0 a 99 utilizando un Display de 7 Segmentos y la técnica de multiplexación. El objetivo es ofrecer una solución que permita mostrar un contador de dos dígitos de manera eficiente y elegante.
+En la tercera parte de este proyecto, se agregó un sensor de luz ambiental para medir la intensidad de la luz en el entorno. Este sensor se integra al proyecto para detectar si la luz ambiental supera un umbral predefinido y, en caso afirmativo, enciende un LED indicador. Esto permite al proyecto adaptarse a diferentes condiciones de iluminación en su entorno, mejorando su versatilidad y proporcionando una experiencia interactiva más completa.
 
 ### Función Principal
-En la función principal de nuestro código, utilizamos los pines B0, B1, B2 y B3, definidos previamente, para controlar los LEDs y realizar la multiplexación en el Display de 7 Segmentos. Esto nos permite mostrar los números del contador en los dos dígitos del display.
+La función más importante en la Parte 3, que incorpora el sensor de luz ambiental, sigue siendo loop, ya que coordina las operaciones generales del proyecto y agrega la funcionalidad del sensor de luz ambiental y otros elementos sin cambiar la función principal de la Parte 2.
 
 
 
