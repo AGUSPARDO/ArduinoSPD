@@ -175,5 +175,11 @@ void loop() {
 
 
 
-### 🤖 Enlace al Proyecto
-Puedes encontrar más detalles y el código fuente en nuestro proyecto en [este enlace](https://www.tinkercad.com/things/0eTntFCBWut?sharecode=yzwHhfn_uPqiHSUPGH1Mm2tKrUIFOl7Cr3AhCLUSpms)
+### 🤖 Enlaces al Proyecto
+Puedes encontrar más detalles y el código fuente de nuestros proyectos: 
+
+🌟Parte 1 en [este enlace](https://www.tinkercad.com/things/0eTntFCBWut?sharecode=yzwHhfn_uPqiHSUPGH1Mm2tKrUIFOl7Cr3AhCLUSpms)
+
+🌟Parte 2 en [este enlace](https://www.tinkercad.com/things/dcBgZpA0Ob5?sharecode=NgFRvHaiIKIEFd5GLVA9g6_qzRWeY9xMHloZ0mLg1jk)
+
+🌟Parte 3 en [este enlace](https://www.tinkercad.com/things/jIqqVZ08YlE?sharecode=ylVlUf1VscF7EYQJx7HGwiXBswUNr06PZD3KbVdRrBU)
